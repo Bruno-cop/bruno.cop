@@ -81,16 +81,14 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- 👀 ESP
+-- 👀 ESP de Players (aliado verde / inimigo vermelho)
 local function createESP(player)
     local box = Drawing.new("Square")
     box.Thickness = 1
     box.Filled = false
-    box.Color = Color3.fromRGB(0, 255, 0)
 
     local nameTag = Drawing.new("Text")
     nameTag.Size = 14
-    nameTag.Color = Color3.new(1, 1, 1)
     nameTag.Center = true
     nameTag.Outline = true
 
@@ -110,6 +108,15 @@ local function createESP(player)
                 box.Size = Vector2.new(width, height)
                 box.Position = Vector2.new(rootPos.X - width/2, headPos.Y)
                 box.Visible = true
+
+                -- ✅ Cor: aliado = verde, inimigo = vermelho
+                if player.Team == LocalPlayer.Team then
+                    box.Color = Color3.fromRGB(0, 255, 0)
+                    nameTag.Color = Color3.fromRGB(0, 255, 0)
+                else
+                    box.Color = Color3.fromRGB(255, 0, 0)
+                    nameTag.Color = Color3.fromRGB(255, 0, 0)
+                end
 
                 local dist = math.floor((Camera.CFrame.Position - root.Position).Magnitude)
                 nameTag.Position = Vector2.new(rootPos.X, headPos.Y - 16)
@@ -258,14 +265,12 @@ local Lighting = game:GetService("Lighting")
 RunService.RenderStepped:Connect(function()
     Lighting.ClockTime = 14
     Lighting.Brightness = 2
-    Lighting.FogEnd = 100000 -- sem neblina
-    Lighting.GlobalShadows = false -- sem sombras
+    Lighting.FogEnd = 100000
+    Lighting.GlobalShadows = false
 end)
 
-local RunService = game:GetService("RunService")
-local Camera = workspace.CurrentCamera
+-- 🚙 ESP de Veículos (UAZ em azul)
 local VehiclesFolder = workspace:WaitForChild("Vehicles")
-
 local espItems = {}
 
 local function createVehicleESP(vehicle)
@@ -292,7 +297,6 @@ local function createVehicleESP(vehicle)
         local rootPos, onScreen = Camera:WorldToViewportPoint(vehicle.PrimaryPart.Position)
         if onScreen then
             local dist = math.floor((Camera.CFrame.Position - vehicle.PrimaryPart.Position).Magnitude)
-
             local headPos, headOnScreen = Camera:WorldToViewportPoint(vehicle.PrimaryPart.Position + Vector3.new(0,3,0))
             local footPos, footOnScreen = Camera:WorldToViewportPoint(vehicle.PrimaryPart.Position - Vector3.new(0,3,0))
 
@@ -317,14 +321,12 @@ local function createVehicleESP(vehicle)
     end)
 end
 
--- Criar ESP para veículos chamados "UAZ" que já existem
 for _, vehicle in pairs(VehiclesFolder:GetChildren()) do
     if vehicle:IsA("Model") and vehicle.PrimaryPart and vehicle.Name == "UAZ" then
         createVehicleESP(vehicle)
     end
 end
 
--- Criar ESP para veículos chamados "UAZ" adicionados depois
 VehiclesFolder.ChildAdded:Connect(function(vehicle)
     if vehicle:IsA("Model") and vehicle.PrimaryPart and vehicle.Name == "UAZ" then
         createVehicleESP(vehicle)
