@@ -330,3 +330,26 @@ VehiclesFolder.ChildAdded:Connect(function(vehicle)
         createVehicleESP(vehicle)
     end
 end)
+
+-- 🌞 Script Anti-Neblina e Visão Limpa
+-- by Bruno.cop
+
+local Lighting = game:GetService("Lighting")
+local RunService = game:GetService("RunService")
+
+-- Conexão para manter sempre aplicado
+RunService.RenderStepped:Connect(function()
+    -- Sem neblina
+    Lighting.FogStart = 0
+    Lighting.FogEnd = 100000
+    
+    -- Sempre claro
+    Lighting.ClockTime = 14
+    Lighting.Brightness = 2
+    
+    -- Sem sombras
+    Lighting.GlobalShadows = false
+    
+    -- Contraste melhor
+    Lighting.ExposureCompensation = 0.2
+end)
